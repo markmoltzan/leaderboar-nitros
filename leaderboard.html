@@ -1,0 +1,64 @@
+<head>
+  <title>leaderboard</title>
+</head>
+
+<body>
+  <h1>Marks Leaderboard on Nitrous</h1>
+
+{{> leaderboard}}
+  
+</body>
+
+<template name="leaderboard">
+  {{#each player}}
+  <li class="player {{selectedClass}}"> {{name}} : {{score}}</li>
+  {{/each}}
+  
+	<h3>number of players = {{playerCount}}</h3>
+	
+  {{#if showSelectedPlayer}} 
+	<li>Selected Player: {{showSelectedPlayer.name}}</li>
+	<input type="button" class="increment" value="give 5 points">
+	<input type="button" class="decrement" value="Take 5 Points">
+	<input type="button" class="remove" value="Remove Player">
+
+	{{/if}}
+	
+	{{> addPlayerForm}}
+	
+	<div>
+  <form id="form1">
+  <input type="text"  id="myinput1">
+  </form>
+	</div>
+	
+  <form id="form2">
+  <input type="text"  id="myinput2">
+  </form>
+  
+  <p>Select a new car from the list.</p>
+  
+	<select id="myselect">
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="opel">Opel</option>
+  <option value="audi">Audi</option>
+	</select>
+  
+  <p id="demo"> </p>
+  <p>test</p>
+  
+  {{#if picked}}
+  You selecded = {{picked}}
+  {{/if}}
+  
+ </template>
+
+<template name='addPlayerForm'>
+	<form  id="addPerson">
+		<input type="text" name="playerName" placeholder="name" id="addPersonName">
+		<input type="text" name="playerScore" placeholder="score" id="addPersonScore">
+		<input type="submit" value="add">
+	</form>
+</template>
+
