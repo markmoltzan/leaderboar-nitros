@@ -2,13 +2,41 @@ PlayersList = new Mongo.Collection("players");
 
 if(Meteor.isServer){
   console.log("Server Server Server");
+	Meteor.publish('thePlayers', function(){
+    var currentUserId = this.userId;
+    return PlayersList.find({createdBy: currentUserId})
+	});
+	Meteor.methods({
+		'insertPlayerData': function (playerName, playerScore){
+			var currentUserId = Meteor.userId();
+			PlayersList.insert({
+				name: playerName,
+				score: playerScore,
+				createdBy: currentUserId
+			})
+		},
+		'removePlayerData': function(player){
+			PlayersList.remove(player);
+		},
+		'modifyPlayerScore': function(player, changeBy){
+			console.log('player = ',player);
+			console.log('modify by =', changeBy);
+			PlayersList.update(player, {$inc: {score: changeBy} });
+			console.log(PlayersList.find().fetch());
+			
+		}
+	})
 };
 
 if(Meteor.isClient){
   console.log("Client Client Clinet");
+	Meteor.subscribe('thePlayers');
+	
+
   
   Template.leaderboard.helpers({
     'player': function(){
+			//var currentUserId = Meteor.userId();
 			return PlayersList.find({}, {sort: {score: -1, name: 1}})
     },
     'selectedClass': function(){
@@ -44,12 +72,14 @@ if(Meteor.isClient){
 		'click .increment': function(){
 			var selectedPlayer = Session.get('selectedPlayer');
 				//	console.log(selectedPlayer);
-			PlayersList.update(selectedPlayer, {$inc: {score: 5} });
+			//PlayersList.update(selectedPlayer, {$inc: {score: 5} });
+			Meteor.call('modifyPlayerScore', selectedPlayer, 5);
 		},
 		'click .decrement': function(){
 			var selectedPlayer = Session.get('selectedPlayer');
 				//	console.log(selectedPlayer);
-			PlayersList.update(selectedPlayer, {$inc: {score: -5} });
+			//PlayersList.update(selectedPlayer, {$inc: {score: -5} });
+			Meteor.call('modifyPlayerScore', selectedPlayer, -5);
 		},
     'focus #form1': function() {
       console.log("focus focus");
@@ -74,7 +104,7 @@ if(Meteor.isClient){
     },
 		'click .remove': function(){
     var selectedPlayer = Session.get('selectedPlayer');
-    PlayersList.remove(selectedPlayer);
+    Meteor.call('removePlayerData', selectedPlayer)
 }
   });
   
@@ -84,18 +114,25 @@ if(Meteor.isClient){
 			//console.log("Form submitted");
 			//console.log(event.type);
 			var playerNameVar = event.target.playerName.value;
-			var playerScoreVar = event.target.playerScore.value;
-			//console.log(playerNameVar);
-			PlayersList.insert({
+			var playerScoreVar = parseInt(event.target.playerScore.value);
+			console.log(playerNameVar);
+			console.log(playerScoreVar);
+			//var currentUserId = Meteor.userId();
+			Meteor.call('insertPlayerData', playerNameVar, playerScoreVar);
+			
+			/*PlayersList.insert({
 				name: playerNameVar,
-				score: playerScoreVar
+				score: playerScoreVar,
+				createdBy : currentUserId
 				});
+				*/
 		  //console.log(event.target.playerName.value);
 			event.target.playerName.value = "";
 			event.target.playerScore.value = "";
 			//console.log(event.target.playerName.value);
 			 addPersonName.style.backgroundColor = "";
-			addPersonScore.style.backgroundColor = "" 
+			addPersonScore.style.backgroundColor = "";
+			
 	},
 		 'focus #addPerson': function() {
       console.log("focus focus");
@@ -108,4 +145,4 @@ if(Meteor.isClient){
 			addPersonScore.style.backgroundColor = "" 
     },
 	});
-};
+}

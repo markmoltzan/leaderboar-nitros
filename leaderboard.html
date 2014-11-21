@@ -5,6 +5,8 @@
 <body>
   <h1>Marks Leaderboard on Nitrous</h1>
 
+	<h1>{{> loginButtons}}</h1>
+	
 {{> leaderboard}}
   
 </body>
@@ -20,12 +22,14 @@
 	<li>Selected Player: {{showSelectedPlayer.name}}</li>
 	<input type="button" class="increment" value="give 5 points">
 	<input type="button" class="decrement" value="Take 5 Points">
-	<input type="button" class="remove" value="Remove Player">
-
+		{{#if currentUser}}
+		<input type="button" class="remove" value="Remove Player">
+		{{/if}}
 	{{/if}}
 	
 	{{> addPlayerForm}}
 	
+	<!--
 	<div>
   <form id="form1">
   <input type="text"  id="myinput1">
@@ -35,7 +39,8 @@
   <form id="form2">
   <input type="text"  id="myinput2">
   </form>
-  
+  -->
+	
   <p>Select a new car from the list.</p>
   
 	<select id="myselect">
@@ -56,9 +61,12 @@
 
 <template name='addPlayerForm'>
 	<form  id="addPerson">
+		{{#if currentUser}}
+		<h2>Add a player and a Score</h2>
 		<input type="text" name="playerName" placeholder="name" id="addPersonName">
-		<input type="text" name="playerScore" placeholder="score" id="addPersonScore">
+		<input type="number" name="playerScore" placeholder="score" id="addPersonScore">
 		<input type="submit" value="add">
+		{{/if}}
 	</form>
 </template>
 
